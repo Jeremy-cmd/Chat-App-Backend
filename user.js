@@ -5,31 +5,31 @@ const saltRounds = 10;
 
 const userSchema = new mongoose.Schema({
 
-  name: {
- type: String,
- trim: true,
- required: true
- },
+      name: {
+       type: String,
+       trim: true,
+       required: true
+     },
 
- email: {
- type: String,
- trim: true,
- unique: 'Email already exists',
- match: [/.+\@.+\..+/, 'Please fill a valid email address'],
- required: true
-},
+     email: {
+       type: String,
+       trim: true,
+       unique: 'Email already exists',
+       match: [/.+\@.+\..+/, 'Please fill a valid email address'],
+       required: true
+    },
 
-created: {
- type: Date,
- default: Date.now
-},
-updated: Date,
+    created: {
+       type: Date,
+       default: Date.now
+    },
+    updated: Date,
 
-password: {
- type: String,
- trim: true,
- required: true
-}
+    password: {
+       type: String,
+       trim: true,
+       required: true
+    }
 
 });
 

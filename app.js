@@ -7,6 +7,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const express = require("express");
 const app = express();
+const routes = require("./routes.js");
 
 
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use(compress());
 app.use(helmet());
 app.use(cors());
+app.use("/", routes);
 
 // mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI);
