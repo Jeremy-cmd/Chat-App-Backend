@@ -8,6 +8,7 @@ const helmet = require("helmet");
 const express = require("express");
 const app = express();
 const routes = require("./routes.js");
+const authRoutes = require("./authRoutes.js");
 
 
 
@@ -19,6 +20,7 @@ app.use(compress());
 app.use(helmet());
 app.use(cors());
 app.use("/", routes);
+app.use("/", authRoutes);
 
 // mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI);
