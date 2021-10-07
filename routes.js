@@ -5,6 +5,8 @@ const Message = require("./messages.js");
 const extend = require("lodash/extend");
 
 const router = express.Router();
+const authorize = require("./authRoutes.js");
+
 
 router.route("/users")
 
@@ -23,7 +25,7 @@ router.route("/users")
 
   }
 
-});
+})
 
 
   // create new user and register
@@ -58,14 +60,14 @@ router.route("/users/:userId")
 
 
 // get a specific user by their id
-.get((req ,res) => {
+.get(authorize.jwtRequirement, (req, res) => {
   req.profile.password = undefined;
   return res.json(req.profile);
 })
 
 
 // update a specific user by their id
-.put(async (req, res) => {
+.put(authorize.jwtRequirement, authorize.isAuthorized, async (req, res) => {
   try{
     let user = req.profile;
     user = extend(user, req.body);
@@ -85,7 +87,7 @@ router.route("/users/:userId")
 
 
 // deletes a user
-.delete(async (req, res) => {
+.delete(authorize.jwtRequirement, authorize.isAuthorized, async (req, res) => {
   try{
     let user = req.profile;
     let removedUser = await user.remove();
@@ -103,18 +105,23 @@ router.route("/users/:userId")
 });
 
 // gets a user by their id
-const userId = async (req, res, id) => {
+const getUserId = async (req, res, next, id) => {
 
   try{
+    console.log(id);
+
     let user = await User.findById(id);
+    console.log("user: " + user);
     if(!user){
       return res.status(400).json({
         error: "user not found"
       });
-
-      req.profile = user;
-      next();
     }
+    
+      req.profile = user;
+      console.log("req.profile: " + req.profile);
+      next();
+
 
   }catch(err){
     return res.status(400).json({
@@ -125,6 +132,7 @@ const userId = async (req, res, id) => {
 
 };
 
-router.param('userId', userId);
+router.param('userId', getUserId);
 
-export default router;
+// export default router;
+module.exports = router;

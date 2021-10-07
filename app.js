@@ -20,7 +20,8 @@ app.use(compress());
 app.use(helmet());
 app.use(cors());
 app.use("/", routes);
-app.use("/", authRoutes);
+app.use("/", authRoutes.router);
+
 
 // mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URI);
@@ -28,17 +29,9 @@ mongoose.connection.on('error', () => {
  throw new Error(`unable to connect to database: ${process.env.MONGO_URI}`)
 });
 
-const userSchema = new mongoose.Schema({
-  name: String
-});
 
-const User = mongoose.model("User", userSchema);
 
-const user = new User({
-  name: "testing"
-});
 
-user.save();
 
 
 const io = require("socket.io")(3001, {
@@ -70,7 +63,15 @@ io.on("connection", socket => {
 });
 
 
-
+app.use((err, req, res, next) => {
+  if(err.name === 'UnauthorizedError'){
+    res.status(401).json({"error": err.name + " : " + err.message});
+  }
+  else if(err){
+    res.status(400).json({"error": err.name + " : " + err.message});
+    console.log(err);
+  }
+})
 
 
 app.listen(3000, (err) => {
