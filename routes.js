@@ -8,6 +8,10 @@ const router = express.Router();
 const authorize = require("./authRoutes.js");
 
 
+
+
+
+
 router.route("/users")
 
 
@@ -56,6 +60,33 @@ router.route("/users")
 
 });
 
+
+router.route("/user/contacts/:userId")
+
+
+// add a user contact
+.post(authorize.jwtRequirement, authorize.isAuthorized, async (req, res) => {
+
+  try{
+    let user = await User.updateOne({"_id": req.profile._id}, {"$push": {"contacts": req.body.contact}});
+    user.password = undefined;
+    return res.json(user);
+
+  }catch(err){
+    return res.status(400).json({
+      error: "error adding contact"
+    })
+
+  }
+
+
+
+});
+
+
+
+
+
 router.route("/users/:userId")
 
 
@@ -98,7 +129,7 @@ router.route("/users/:userId")
   }catch(err){
     res.status(400).json({
       error: "Couldn't remove user"
-    })
+    });
 
   }
 
@@ -117,7 +148,7 @@ const getUserId = async (req, res, next, id) => {
         error: "user not found"
       });
     }
-    
+
       req.profile = user;
       console.log("req.profile: " + req.profile);
       next();
@@ -126,13 +157,14 @@ const getUserId = async (req, res, next, id) => {
   }catch(err){
     return res.status(400).json({
       error: "couldn't get user"
-    })
+    });
   }
 
 
 };
 
 router.param('userId', getUserId);
+
 
 // export default router;
 module.exports = router;

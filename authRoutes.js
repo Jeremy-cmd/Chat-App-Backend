@@ -28,7 +28,7 @@ router.route("/auth/signin")
     return res.json({
       token,
       user: {
-        id: user.id,
+        id: user._id,
         name: user.name,
         email: user.email
       }
@@ -68,7 +68,9 @@ const isAuthorized = (req, res, next) => {
   }
   next();
 
-}
+};
+
+
 
 // export default router;
 module.exports = { router, jwtRequirement, isAuthorized };
